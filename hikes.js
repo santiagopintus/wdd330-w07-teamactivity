@@ -1,4 +1,4 @@
-// Example of using Classes and modules to organize the code needed to render our list of hikes. Not using MVC here.
+import Comments from "./comments.js";
 
 //create an array of hikes
 const hikeList = [
@@ -42,6 +42,7 @@ export default class Hikes {
   constructor(elementId) {
     this.parentElement = document.getElementById(elementId);
     // we need a back button to return back to the list. This will build it and hide it. When we need it we just need to remove the 'hidden' class
+    this.comments = new Comments("hikes", "commentsList")
     this.backButton = this.buildBackButton();
   }
   // why is this function necessary?  hikeList is not exported, and so it cannot be seen outside of this module. I added this in case I ever need the list of hikes outside of the module. This also sets me up nicely if my data were to move. I can just change this method to the new source and everything will still work if I only access the data through this getter.
@@ -60,6 +61,7 @@ export default class Hikes {
     this.addHikeListener();
     // make sure the back button is hidden
     this.backButton.classList.add('hidden');
+    this.comments.showCommentsList();
   }
   // show one hike with full details in the parentElement
   showOneHike(hikeName) {
@@ -68,6 +70,8 @@ export default class Hikes {
     this.parentElement.appendChild(renderOneHikeFull(hike));
     // show the back button
     this.backButton.classList.remove('hidden');
+    // this.render
+    this.comments.showCommentsList(hikeName);
   }
   // in order to show the details of a hike ontouchend we will need to attach a listener AFTER the list of hikes has been built. The function below does that.
   addHikeListener() {
@@ -103,19 +107,21 @@ function renderOneHikeLight(hike) {
   item.classList.add('light');
   // setting this to make getting the details for a specific hike easier later.
   item.setAttribute('data-name', hike.name);
-  item.innerHTML = ` <h2>${hike.name}</h2>
-<div class="image"><img src="${imgBasePath}${hike.imgSrc}" alt="${hike.imgAlt}"></div>
-<div>
-        <div>
-            <h3>Distance</h3>
-            <p>${hike.distance}</p>
-        </div>
-        <div>
-            <h3>Difficulty</h3>
-            <p>${hike.difficulty}</p>
-        </div>
-</div>`;
-
+  item.innerHTML = ` 
+    <h2>${hike.name}</h2>
+    <div class="image">
+      <img src="${imgBasePath}${hike.imgSrc}" alt="${hike.imgAlt}">
+    </div>
+    <div>
+      <div>
+        <h3>Distance</h3>
+        <p>${hike.distance}</p>
+      </div>
+      <div>
+        <h3>Difficulty</h3>
+        <p>${hike.difficulty}</p>
+      </div>
+    </div>`;
   return item;
 }
 function renderOneHikeFull(hike) {
